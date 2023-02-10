@@ -1,0 +1,70 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: ""
+      dockerfile: Dockerfile
+      args:
+        USER_ID: '${WWWUSER:-1000}'
+        GROUP_ID: '${WWWGROUP:-1000}'
+        USER: '${USER:-whoami}'
+    container_name: expennies-app
+    restart: always
+    working_dir: /var/www/
+    extra_hosts:
+     - "host.docker.internal:host-gateway"
+    volumes:
+      - ../:/var/www
+      - ./local.ini:/usr/local/etc/php/conf.d/local.ini
+  nginx:
+    image: nginx:1.19-alpine
+    container_name: expennies-nginx
+    restart: always
+    ports:
+      - "8000:80"
+    volumes:
+      - ../:/var/www
+      - ./nginx:/etc/nginx/conf.d
+  db:
+    container_name: expennies-db
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./storage/mysql:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: expennies-phpmyadmin
+    links: 
+        - db:db
+    restart: always
+    depends_on: 
+    - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - 8080:80
+    networks:
+      - default
+  mailhog:
+    image: mailhog/mailhog
+    container_name: expennies-mailhog
+    restart: always
+    logging:
+      driver: none
+    ports:
+      - 8025:8025
+      - 1025:1025
+  cron:
+    container_name: expennies-cron
+    build: ./cron
+    volumes:
+      - ../:/var/www
+      - ./log/cron:/var/log/cron
