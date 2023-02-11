@@ -62,12 +62,9 @@ class AuthController
     public function logIn(Request $request, Response $response): Response
     {
         $data = $request->getParsedBody();
-
         $v = new Validator($data);
-
         $v->rule('required', ['email', 'password']);
         $v->rule('email', 'email');
-
         if (! $v->validate()) {
             throw new ValidationException($v->errors());
         }

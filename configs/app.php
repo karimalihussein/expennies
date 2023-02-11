@@ -1,15 +1,16 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 use App\Enum\AppEnvironment;
 
 $appEnv = $_ENV['APP_ENV'] ?? AppEnvironment::Production->value;
+$appSnakeName = strtolower(str_replace(' ', '-', $_ENV['APP_NAME'] ?? 'app'));
 return [
     'app_name'              => $_ENV['APP_NAME'],
     'app_version'           => $_ENV['APP_VERSION'] ?? '1.0',
     'app_environment'       => $appEnv,
-    'display_error_details' => (bool) true,//($_ENV['APP_DEBUG'] ?? 0),
+    'display_error_details' => (bool) true, //($_ENV['APP_DEBUG'] ?? 0),
     'log_errors'            => true,
     'log_error_details'     => true,
     'doctrine'              => [
@@ -25,4 +26,10 @@ return [
             'password' => $_ENV['DB_PASS'],
         ],
     ],
+    'session'   => [
+        'name'     => $appSnakeName . '_session',
+        'secure'   => true,
+        'httponly' => true,
+        'samesite' => 'lax',
+    ]
 ];
