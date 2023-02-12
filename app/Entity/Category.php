@@ -13,8 +13,11 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 
 #[Entity, Table('categories')]
+#[HasLifecycleCallbacks]
 class Category
 {
     #[Id, Column(options: ['unsigned' => true]), GeneratedValue]
@@ -38,6 +41,14 @@ class Category
     public function __construct()
     {
         $this->transactions = new ArrayCollection();
+    }
+    #[\Doctrine\ORM\Mapping\PrePersist, \Doctrine\ORM\Mapping\PreUpdate]
+    public function updateTimestamps(LifecycleEventArgs $args): void
+    {
+        if (!isset($this->createdAt)) {
+            $this->createdAt = new \DateTime();
+            $this->updatedAt = new \DateTime();
+        }
     }
 
     public function getId(): int
