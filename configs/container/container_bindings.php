@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Auth;
 use App\Config;
 use App\Contracts\AuthInterface;
+use App\Contracts\RequestValidatorFactoryInterface;
+use App\Contracts\RequestValidatorInterface;
 use App\Contracts\SessionInterface;
 use App\Contracts\UserProviderInterface;
 use App\Contracts\UserProviderServiceInterface;
@@ -13,6 +15,7 @@ use App\Enum\AppEnvironment;
 use App\Enum\SameSite;
 use App\Services\UserProviderService;
 use App\Session;
+use App\Validators\RequestValidatorFactory;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
 use function DI\create;
@@ -85,5 +88,6 @@ return [
         $config->get('session.httponly', true),
         SameSite::from($config->get('session.samesite', 'lax'))
     )),
+    RequestValidatorFactoryInterface::class => fn (ContainerInterface $container) => $container->get(RequestValidatorFactory::class),
 
 ];

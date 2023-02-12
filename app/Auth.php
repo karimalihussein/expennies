@@ -8,6 +8,7 @@ use App\Contracts\AuthInterface;
 use App\Contracts\SessionInterface;
 use App\Contracts\UserInterface;
 use App\Contracts\UserProviderServiceInterface;
+use App\DataObjects\RegisterUserData;
 use App\Entity\User;
 use App\Exception\ValidationException;
 use Doctrine\ORM\EntityManager;
@@ -46,12 +47,10 @@ class Auth implements AuthInterface
     public function attemptLogin(array $credentials): bool
     {
         $user = $this->userProvider->getByCredentials($credentials);
-        if (! $user || ! $this->checkCredentials($user, $credentials)) {
+        if (!$user || !$this->checkCredentials($user, $credentials)) {
             return false;
         }
-        $this->session->regenerate();
-        $this->session->put('user', $user->getId());
-        $this->user = $user;
+        $this->logIn($user);
         return true;
     }
 
@@ -65,5 +64,19 @@ class Auth implements AuthInterface
         $this->session->forget('user');
         $this->session->regenerate();
         $this->user = null;
+    }
+
+    public function register(RegisterUserData $data): UserInterface
+    {
+        $user = $this->userProvider->create($data);
+        $this->logIn($user);
+        return $user;
+    }
+
+    public function logIn(UserInterface $user): void
+    {
+        $this->session->regenerate();
+        $this->session->put('user', $user->getId());
+        $this->user = $user;
     }
 }
