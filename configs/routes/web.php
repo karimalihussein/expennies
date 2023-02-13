@@ -22,9 +22,9 @@ return function (App $app) {
     $app->group('/categories', function (RouteCollectorProxy $categories) {
         $categories->get('', [CategoiresController::class, 'index']);
         $categories->post('', [CategoiresController::class, 'store']);
-        $categories->delete('/{id}', [CategoiresController::class, 'delete']);
-        $categories->get('/{id}', [CategoiresController::class, 'show']);
-        $categories->post('/{id}', [CategoiresController::class, 'update']);
+        $categories->delete('/{id:[0-9]+}', [CategoiresController::class, 'delete']);
+        $categories->get('/{id:[0-9]+}', [CategoiresController::class, 'show']);
+        $categories->post('/{id:[0-9]+}', [CategoiresController::class, 'update']);
 
     })->add(AuthMiddleware::class);
 };
