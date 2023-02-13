@@ -19,19 +19,9 @@ class CategoryService
     public function create(string $name, User $user): Category
     {
         $category = new Category();
-        $category->setName($name);
         $category->setUser($user);
-        $this->entityManager->persist($category);
-        $this->entityManager->flush();
-        return $category;
+        return $this->update($category, $name);
     }
-
-    // public function create(string $name, User $user): Category
-    // {
-    //     $this->entityManager->persist($this->make($name, $user));
-    //     $this->entityManager->flush();
-    //     return $this->make($name, $user);
-    // }
 
     public function getAll(): array
     {
@@ -48,5 +38,13 @@ class CategoryService
     public function findById(int $id): ?Category
     {
         return $this->entityManager->getRepository(Category::class)->find($id);
+    }
+
+    public function update(Category $category, string $name): Category
+    {
+        $category->setName($name);
+        $this->entityManager->persist($category);
+        $this->entityManager->flush();
+        return $category;
     }
 }

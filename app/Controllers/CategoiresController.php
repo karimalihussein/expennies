@@ -66,9 +66,7 @@ class CategoiresController
         if(!$category) {
             return $response->withHeader('Location', '/categories')->withStatus(302);
         }
-        $data = [
-            'status'    => 'success',
-        ];
+        $this->categoryService->update($category, $data['name']);
         return $this->responseFormat->json($response, $data);
     }
 

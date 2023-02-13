@@ -13,7 +13,7 @@ class UpdateCategoryRequestValidator implements RequestValidatorInterface
     public function validate(array $data): array
     {
         $v = new Validator($data);
-        $v->rule('required', ['name']);
+        $v->rule('required', ['name', 'id']);
         $v->rule('lengthMin', 'name', 3);
         $v->rule('lengthMax', 'name', 50);
         $v->labels([
