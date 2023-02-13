@@ -25,4 +25,23 @@ class CategoryService
         $this->entityManager->flush();
         return $category;
     }
+
+    // public function create(string $name, User $user): Category
+    // {
+    //     $this->entityManager->persist($this->make($name, $user));
+    //     $this->entityManager->flush();
+    //     return $this->make($name, $user);
+    // }
+
+    public function getAll(): array
+    {
+        return $this->entityManager->getRepository(Category::class)->findAll();
+    }
+
+    public function delete(int $id): void
+    {
+        $category = $this->entityManager->getRepository(Category::class)->find($id);
+        $this->entityManager->remove($category);
+        $this->entityManager->flush();
+    }
 }

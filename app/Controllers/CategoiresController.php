@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Controllers;
 
@@ -19,7 +19,9 @@ class CategoiresController
 
     public function index(Request $request, Response $response): Response
     {
-        return $this->twig->render($response, 'categories/index.twig');
+        return $this->twig->render($response, 'categories/index.twig', [
+            'categories' => $this->categoryService->getAll()
+        ]);
     }
 
 
@@ -30,9 +32,9 @@ class CategoiresController
         return $response->withHeader('Location', '/categories')->withStatus(302);
     }
 
-    public function delete(Request $request, Response $response): Response
+    public function delete(Request $request, Response $response, array $args): Response
     {
-        // TODO: Implement delete() method.
+        $this->categoryService->delete((int) $args['id']);
         return $response->withHeader('Location', '/categories')->withStatus(302);
     }
 }

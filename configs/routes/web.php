@@ -22,6 +22,6 @@ return function (App $app) {
     $app->group('/categories', function (RouteCollectorProxy $categories) {
         $categories->get('', [CategoiresController::class, 'index']);
         $categories->post('', [CategoiresController::class, 'store']);
-        $categories->delete('{id}', [CategoiresController::class, 'delete']);
+        $categories->delete('/{id}', [CategoiresController::class, 'delete']);
     })->add(AuthMiddleware::class);
 };

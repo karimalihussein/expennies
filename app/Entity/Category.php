@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Entity;
 
+use App\Traits\HasTimestamps;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
@@ -14,23 +15,17 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 
 #[Entity, Table('categories')]
 #[HasLifecycleCallbacks]
 class Category
 {
+    use HasTimestamps;
     #[Id, Column(options: ['unsigned' => true]), GeneratedValue]
     private int $id;
 
     #[Column]
     private string $name;
-
-    #[Column(name: 'created_at')]
-    private \DateTime $createdAt;
-
-    #[Column(name: 'updated_at')]
-    private \DateTime $updatedAt;
 
     #[ManyToOne(inversedBy: 'categories')]
     private User $user;
@@ -42,15 +37,6 @@ class Category
     {
         $this->transactions = new ArrayCollection();
     }
-    #[\Doctrine\ORM\Mapping\PrePersist, \Doctrine\ORM\Mapping\PreUpdate]
-    public function updateTimestamps(LifecycleEventArgs $args): void
-    {
-        if (!isset($this->createdAt)) {
-            $this->createdAt = new \DateTime();
-            $this->updatedAt = new \DateTime();
-        }
-    }
-
     public function getId(): int
     {
         return $this->id;
