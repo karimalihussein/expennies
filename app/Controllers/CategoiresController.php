@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Contracts\RequestValidatorFactoryInterface;
+use App\ResponseFormat;
 use App\Services\CategoryService;
 use App\Validators\CreateCategoryRequestValidator;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -13,7 +14,12 @@ use Slim\Views\Twig;
 
 class CategoiresController
 {
-    public function __construct(private readonly Twig $twig, private readonly RequestValidatorFactoryInterface $requestValidator, private readonly CategoryService $categoryService)
+    public function __construct(
+        private readonly Twig $twig, 
+        private readonly RequestValidatorFactoryInterface $requestValidator, 
+        private readonly CategoryService $categoryService,
+        private readonly ResponseFormat $responseFormat
+        )
     {
     }
 
@@ -22,6 +28,20 @@ class CategoiresController
         return $this->twig->render($response, 'categories/index.twig', [
             'categories' => $this->categoryService->getAll()
         ]);
+    }
+
+    public function show(Request $request, Response $response, array $args): Response
+    {
+        $category = $this->categoryService->findById((int) $args['id']);
+        if(!$category) {
+            return $response->withHeader('Location', '/categories')->withStatus(302);
+        }
+        $data = [
+            'id' => $category->getId(),
+            'name' => $category->getName(),
+        ];
+        $response->getBody()->write(json_encode($data));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
