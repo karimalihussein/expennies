@@ -8,6 +8,7 @@ use App\Contracts\RequestValidatorFactoryInterface;
 use App\ResponseFormat;
 use App\Services\CategoryService;
 use App\Validators\CreateCategoryRequestValidator;
+use App\Validators\UpdateCategoryRequestValidator;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Views\Twig;
@@ -40,8 +41,7 @@ class CategoiresController
             'id' => $category->getId(),
             'name' => $category->getName(),
         ];
-        $response->getBody()->write(json_encode($data));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        return $this->responseFormat->json($response, $data);
     }
 
 
@@ -57,4 +57,20 @@ class CategoiresController
         $this->categoryService->delete((int) $args['id']);
         return $response->withHeader('Location', '/categories')->withStatus(302);
     }
+
+    public function update(Request $request, Response $response, array $args): Response
+    {
+        $data = $this->requestValidator->make(UpdateCategoryRequestValidator::class)->validate($request->getParsedBody());
+        dd($data);
+        $category = $this->categoryService->findById((int) $args['id']);
+        if(!$category) {
+            return $response->withHeader('Location', '/categories')->withStatus(302);
+        }
+        $data = [
+            'status'    => 'success',
+        ];
+        return $this->responseFormat->json($response, $data);
+    }
+
+
 }
